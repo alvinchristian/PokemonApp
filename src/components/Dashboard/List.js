@@ -1,15 +1,15 @@
 import {
   View,
   Text,
-  FlatList,
-  TouchableOpacity,
+  Image,
   ImageBackground,
+  TouchableOpacity,
+  FlatList,
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo, useCallback} from 'react';
 import axios from 'axios';
-import {SvgUri} from 'react-native-svg';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {BackgroundColors, Colors} from '../../helpers/Colors';
 
@@ -20,8 +20,10 @@ export default function List({navigation}) {
   const [prevUrl, setPrevUrl] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const getAllPokemons = async () => {
+  const getAllPokemons = useMemo(async () => {
     try {
+      setLoading(true);
+      setAllPokemon([]);
       const res = await axios.get(url);
       setNextUrl(res.data.next);
       setPrevUrl(res.data.previous);
@@ -29,27 +31,27 @@ export default function List({navigation}) {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [url]);
 
-  const getPokemon = data => {
+  const getPokemon = async data => {
     try {
-      data.forEach(async pokemon => {
+      await data.forEach(async pokemon => {
         const res = await axios.get(pokemon.url);
         setAllPokemon(currentList => [...currentList, res.data]);
       });
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
   };
 
+  const pagination = useCallback(async url => {
+    setUrl(url);
+  }, []);
+
   useEffect(() => {
-    if (allPokemon != false) {
-      setLoading(false);
-    } else {
-      setLoading(true);
-      getAllPokemons();
-    }
-  }, [allPokemon]);
+    getAllPokemons;
+  }, []);
 
   const renderItem = ({item}) => {
     return (
@@ -60,16 +62,17 @@ export default function List({navigation}) {
           backgroundColor: BackgroundColors[item.types[0].type.name],
         }}>
         <Text style={styles.Id}>{item.id}</Text>
-        <SvgUri
-          width={80}
-          height={60}
-          uri={item.sprites.other.dream_world.front_default}
+        <Image
+          style={styles.Image}
+          source={{
+            uri: item.sprites.other.home.front_default,
+          }}
         />
         <Text style={styles.Name} numberOfLines={1}>
           {item.name}
         </Text>
         <ImageBackground
-          resizeMode="contain"
+          resizeMode="center"
           source={require('../../assets/Images/pokeball_card.png')}
           style={styles.ImageBackground}></ImageBackground>
       </TouchableOpacity>
@@ -96,8 +99,7 @@ export default function List({navigation}) {
               <TouchableOpacity
                 style={styles.Button}
                 onPress={() => {
-                  setAllPokemon([]);
-                  setUrl(prevUrl);
+                  pagination(prevUrl);
                 }}>
                 <Icon
                   name="arrow-left-circle-outline"
@@ -111,8 +113,7 @@ export default function List({navigation}) {
               <TouchableOpacity
                 style={styles.Button}
                 onPress={() => {
-                  setAllPokemon([]);
-                  setUrl(nextUrl);
+                  pagination(nextUrl);
                 }}>
                 <Text style={styles.Text}>Next</Text>
                 <Icon
@@ -165,6 +166,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.black,
   },
+  Image: {
+    width: 90,
+    height: 75,
+    resizeMode: 'center',
+  },
   Name: {
     fontFamily: 'Poppins-Reguler',
     fontSize: 12,
@@ -193,6 +199,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 80,
     left: 60,
-    top: -15,
+    top: -20,
   },
 });

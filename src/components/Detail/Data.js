@@ -14,7 +14,10 @@ export default function Data({data, object, object2}) {
       {data[object]?.map((item, index) => (
         <TouchableOpacity
           key={index}
-          style={[styles.Box, {backgroundColor: generateColor()}]}>
+          style={[
+            styles.Box,
+            {backgroundColor: Colors[data.types[0].type.name]},
+          ]}>
           <Text style={styles.Text}>{item[object2].name}</Text>
         </TouchableOpacity>
       ))}

@@ -5,6 +5,7 @@ import RoundedButton from '../components/RoundedButton';
 import {Colors} from '../helpers/Colors';
 
 export default function Header({navigation, page}) {
+  const name = auth().currentUser?.displayName;
   const logout = async () => {
     await auth().signOut();
     navigation.replace('Login');
@@ -14,7 +15,7 @@ export default function Header({navigation, page}) {
       <View style={styles.Box}>
         <View>
           <Text style={styles.Greet}>Hello,</Text>
-          <Text style={styles.Name}>Alvin Christian</Text>
+          <Text style={styles.Name}>{name}</Text>
         </View>
         <View style={styles.Right}>
           {page == 'Dashboard' ? (

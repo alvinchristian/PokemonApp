@@ -2,12 +2,10 @@ import {
   SafeAreaView,
   ImageBackground,
   StyleSheet,
-  ActivityIndicator,
   StatusBar,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import FlashMessage from 'react-native-flash-message';
 import Header from '../../components/Header';
 import List from '../../components/Detail/List';
 import {BackgroundColors} from '../../helpers/Colors';
@@ -16,7 +14,6 @@ export default function Detail({route, navigation}) {
   const idPokemon = route.params.idPokemon;
   const [pokemon, setPokemon] = useState([]);
   const [background, setBackground] = useState('');
-  const [loading, setLoading] = useState(true);
 
   const getPokemon = async () => {
     try {
@@ -33,9 +30,7 @@ export default function Detail({route, navigation}) {
   useEffect(() => {
     if (pokemon != false) {
       setBackground(pokemon.types[0].type.name);
-      setLoading(false);
     } else {
-      setLoading(true);
       getPokemon();
     }
   }, [pokemon]);
@@ -56,12 +51,9 @@ export default function Detail({route, navigation}) {
         style={styles.ImageBackground}
         source={require('../../assets/Images/pokeball_card.png')}
       />
-      {loading ? (
-        <ActivityIndicator size={50} color="#4D96FF" />
-      ) : (
+      {pokemon != false ? (
         <List data={pokemon} navigation={navigation} />
-      )}
-      <FlashMessage position="top" />
+      ) : null}
     </SafeAreaView>
   );
 }

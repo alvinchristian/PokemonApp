@@ -7,8 +7,9 @@ const Stack = createStackNavigator();
 export default function MainStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Login"
+      initialRouteName="Splash"
       screenOptions={{headerShown: false}}>
+      <Stack.Screen name="Splash" component={Screens.Splash} />
       <Stack.Screen name="Login" component={Screens.Login} />
       <Stack.Screen name="Register" component={Screens.Register} />
       <Stack.Screen name="Dashboard" component={Screens.Dashboard} />

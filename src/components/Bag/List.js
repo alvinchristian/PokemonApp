@@ -3,12 +3,12 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
+  Image,
   ImageBackground,
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
-import React, {useEffect, useState, useMemo} from 'react';
-import {SvgUri} from 'react-native-svg';
+import React, {useEffect, useState, useMemo, useCallback} from 'react';
 import {BackgroundColors, Colors} from '../../helpers/Colors';
 import {firebase} from '@react-native-firebase/database';
 
@@ -23,15 +23,25 @@ export default function List({navigation}) {
     );
 
   const getPokebag = useMemo(() => {
+    setLoading(true);
     myDB
       .ref('pokebag/')
       .orderByChild('id')
       .once('value')
       .then(snapshot => {
-        setPokemons(Object.values(snapshot.val()));
-        pokemons != false ? setLoading(false) : setLoading(true);
+        if (snapshot.val() != null) {
+          const res = Object.values(snapshot.val());
+          setPokemons(res);
+          if (pokemons != false) {
+            setLoading(false);
+          }
+        }
       });
   }, [pokemons]);
+
+  const removePokemon = useCallback(async id => {
+    await myDB.ref(`/pokebag/${id}`).remove();
+  }, []);
 
   useEffect(() => {
     getPokebag;
@@ -39,26 +49,34 @@ export default function List({navigation}) {
 
   const renderItem = ({item}) => {
     return (
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Detail', {idPokemon: item.id})}
-        style={{
-          ...styles.Card,
-          backgroundColor: BackgroundColors[item.types[0].type.name],
-        }}>
-        <Text style={styles.Id}>{item.id}</Text>
-        <SvgUri
-          width={80}
-          height={60}
-          uri={item.sprites.other.dream_world.front_default}
-        />
-        <Text style={styles.Name} numberOfLines={1}>
-          {item.name}
-        </Text>
-        <ImageBackground
-          resizeMode="contain"
-          source={require('../../assets/Images/pokeball_card.png')}
-          style={styles.ImageBackground}></ImageBackground>
-      </TouchableOpacity>
+      <View style={styles.ItemContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Detail', {idPokemon: item.id})}
+          style={{
+            ...styles.Card,
+            backgroundColor: BackgroundColors[item.types[0].type.name],
+          }}>
+          <Text style={styles.Id}>{item.id}</Text>
+          <Image
+            style={styles.Image}
+            source={{
+              uri: item.sprites.other.home.front_default,
+            }}
+          />
+          <Text style={styles.Name} numberOfLines={1}>
+            {item.name}
+          </Text>
+          <ImageBackground
+            resizeMode="contain"
+            source={require('../../assets/Images/pokeball_card.png')}
+            style={styles.ImageBackground}></ImageBackground>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.Button}
+          onPress={() => removePokemon(item.id)}>
+          <Text style={styles.Text}>Delete</Text>
+        </TouchableOpacity>
+      </View>
     );
   };
 
@@ -93,6 +111,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  ItemContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  Button: {
+    width: '80%',
+    height: 25,
+    backgroundColor: Colors.danger,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  Text: {
+    fontFamily: 'Poppins-Reguler',
+    fontSize: 12,
+    color: Colors.white,
+  },
   Title: {
     fontFamily: 'Poppins-Bold',
     fontSize: 20,
@@ -113,6 +149,11 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  Image: {
+    width: 90,
+    height: 75,
+    resizeMode: 'center',
   },
   Id: {
     fontFamily: 'Poppins-Bold',

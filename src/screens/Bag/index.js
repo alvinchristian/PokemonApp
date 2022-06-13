@@ -5,7 +5,6 @@ import {
   StatusBar,
 } from 'react-native';
 import React from 'react';
-import FlashMessage from 'react-native-flash-message';
 import Header from '../../components/Header';
 import List from '../../components/Bag/List';
 import {Colors} from '../../helpers/Colors';
@@ -21,7 +20,6 @@ export default function Bag({navigation}) {
         source={require('../../assets/Images/pokeball_header.png')}
       />
       <List navigation={navigation} />
-      <FlashMessage position="top" />
     </SafeAreaView>
   );
 }

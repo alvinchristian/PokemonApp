@@ -1,8 +1,8 @@
 import {
   SafeAreaView,
   ImageBackground,
-  StyleSheet,
   StatusBar,
+  StyleSheet,
 } from 'react-native';
 import React from 'react';
 import Header from '../../components/Header';
@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '50%',
+    resizeMode: 'center',
     opacity: 0.1,
   },
 });
