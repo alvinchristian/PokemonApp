@@ -42,6 +42,7 @@ export default function List({navigation}) {
 
   const removePokemon = useCallback(async id => {
     await myDB.ref(`/pokebag/${id}`).remove();
+    setPokemons([]);
   }, []);
 
   const renderItem = ({item}) => {

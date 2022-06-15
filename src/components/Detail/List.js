@@ -98,7 +98,7 @@ export default function List({data, navigation}) {
     });
   }, [data]);
 
-  const catchPokemon = useCallback(() => {
+  const catchPokemon = useCallback(data => {
     if (Math.random() < 0.5) {
       try {
         myDB
@@ -155,7 +155,7 @@ export default function List({data, navigation}) {
             />
           </View>
           <TouchableOpacity
-            onPress={catchPokemon}
+            onPress={() => catchPokemon(data)}
             disabled={disable}
             style={{
               ...styles.Button2,
