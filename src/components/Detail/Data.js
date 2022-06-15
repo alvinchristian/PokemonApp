@@ -3,21 +3,15 @@ import React from 'react';
 import {Colors} from '../../helpers/Colors';
 
 export default function Data({data, object, object2}) {
-  const generateColor = () => {
-    const randomColor = Math.floor(Math.random() * 16777215)
-      .toString(16)
-      .padStart(6, '0');
-    return `#${randomColor}`;
-  };
   return (
     <View style={styles.Wrap}>
       {data[object]?.map((item, index) => (
         <TouchableOpacity
           key={index}
-          style={[
-            styles.Box,
-            {backgroundColor: Colors[data.types[0].type.name]},
-          ]}>
+          style={{
+            ...styles.Box,
+            backgroundColor: Colors.placeholder,
+          }}>
           <Text style={styles.Text}>{item[object2].name}</Text>
         </TouchableOpacity>
       ))}

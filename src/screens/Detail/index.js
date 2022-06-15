@@ -4,7 +4,7 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import axios from 'axios';
 import Header from '../../components/Header';
 import List from '../../components/Detail/List';
@@ -15,23 +15,19 @@ export default function Detail({route, navigation}) {
   const [pokemon, setPokemon] = useState([]);
   const [background, setBackground] = useState('');
 
-  const getPokemon = async () => {
+  const getPokemon = useMemo(async () => {
     try {
-      const res = await axios.get(
-        `https://pokeapi.co/api/v2/pokemon/${idPokemon}/`,
-      );
-      const data = res.data;
-      setPokemon(data);
+      if (pokemon != false) {
+        setBackground(pokemon.types[0].type.name);
+      } else {
+        const res = await axios.get(
+          `https://pokeapi.co/api/v2/pokemon/${idPokemon}/`,
+        );
+        const data = res.data;
+        setPokemon(data);
+      }
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    if (pokemon != false) {
-      setBackground(pokemon.types[0].type.name);
-    } else {
-      getPokemon();
     }
   }, [pokemon]);
 
@@ -51,9 +47,7 @@ export default function Detail({route, navigation}) {
         style={styles.ImageBackground}
         source={require('../../assets/Images/pokeball_card.png')}
       />
-      {pokemon != false ? (
-        <List data={pokemon} navigation={navigation} />
-      ) : null}
+      <List data={pokemon} navigation={navigation} />
     </SafeAreaView>
   );
 }

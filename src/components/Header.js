@@ -1,15 +1,17 @@
 import {View, Text, Image, StyleSheet} from 'react-native';
-import React from 'react';
+import React, {useCallback} from 'react';
 import auth from '@react-native-firebase/auth';
 import RoundedButton from '../components/RoundedButton';
 import {Colors} from '../helpers/Colors';
 
 export default function Header({navigation, page}) {
   const name = auth().currentUser?.displayName;
-  const logout = async () => {
+
+  const logout = useCallback(async () => {
     await auth().signOut();
     navigation.replace('Login');
-  };
+  }, []);
+
   return (
     <View style={styles.Container}>
       <View style={styles.Box}>

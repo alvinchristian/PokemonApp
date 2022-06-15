@@ -8,11 +8,11 @@ import {
   StatusBar,
   StyleSheet,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import auth from '@react-native-firebase/auth';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import {Colors} from '../../helpers/Colors';
@@ -35,7 +35,7 @@ export default function Register({navigation}) {
       ),
   });
 
-  const register = async values => {
+  const register = useCallback(async values => {
     try {
       await auth().createUserWithEmailAndPassword(
         values.email,
@@ -56,7 +56,7 @@ export default function Register({navigation}) {
         });
       }
     }
-  };
+  }, []);
 
   return (
     <Formik

@@ -12,7 +12,7 @@ import {firebase} from '@react-native-firebase/database';
 import {showMessage} from 'react-native-flash-message';
 import Data from './Data';
 import RoundedButton from '../RoundedButton';
-import {Colors} from '../../helpers/Colors';
+import {BackgroundColors, Colors} from '../../helpers/Colors';
 
 export default function List({data, navigation}) {
   const [disable, setDisable] = useState(false);
@@ -29,23 +29,6 @@ export default function List({data, navigation}) {
     .database(
       'https://pokemonapp-binar-default-rtdb.asia-southeast1.firebasedatabase.app/',
     );
-
-  const catched = useMemo(() => {
-    setLoading(true);
-    myDB.ref('pokebag/').on('value', snapshot => {
-      if (snapshot.val() != null) {
-        const res = Object.values(snapshot.val());
-        res.filter(it => {
-          if (it.name === data.name) {
-            setDisable(true);
-            setCaption('Catched');
-            setColor(Colors.placeholder);
-          }
-        });
-      }
-      setLoading(false);
-    });
-  }, [data]);
 
   const fadeOut = () => {
     Animated.loop(
@@ -97,6 +80,23 @@ export default function List({data, navigation}) {
       },
     ).start();
   };
+
+  const catched = useMemo(() => {
+    setLoading(true);
+    myDB.ref('pokebag/').on('value', snapshot => {
+      if (snapshot.val() != null) {
+        const res = Object.values(snapshot.val());
+        res.filter(it => {
+          if (it.name === data.name) {
+            setColor(Colors.placeholder);
+            setCaption('Catched');
+            setDisable(true);
+          }
+        });
+      }
+      setLoading(false);
+    });
+  }, [data]);
 
   const catchPokemon = useCallback(() => {
     if (Math.random() < 0.5) {
@@ -165,7 +165,18 @@ export default function List({data, navigation}) {
           </TouchableOpacity>
           <ScrollView contentContainerStyle={styles.Card}>
             <Text style={styles.Name}>{data.name}</Text>
-            <Data data={data} object={'types'} object2={'type'} />
+            <View style={styles.Wrap}>
+              {data.types?.map((item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={{
+                    ...styles.Box,
+                    backgroundColor: BackgroundColors[item.type.name],
+                  }}>
+                  <Text style={styles.Text}>{item.type.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
             <Text style={styles.Title}>About</Text>
             <Text style={styles.Text2}>Height : {data?.height}</Text>
             <Text style={styles.Text2}>Weight : {data?.weight}</Text>
@@ -200,7 +211,6 @@ const styles = StyleSheet.create({
   },
   Button2: {
     alignSelf: 'center',
-
     width: 100,
     height: 40,
     marginVertical: 10,
@@ -221,7 +231,24 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
   },
-
+  Wrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  Text: {
+    fontFamily: 'Poppins-Reguler',
+    fontSize: 12,
+    color: Colors.black,
+    textTransform: 'capitalize',
+  },
+  Box: {
+    width: 100,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 25,
+    margin: 5,
+  },
   Name: {
     fontFamily: 'Poppins-Bold',
     fontSize: 20,

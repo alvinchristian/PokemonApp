@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
-import React, {useEffect, useState, useMemo, useCallback} from 'react';
+import React, {useState, useMemo, useCallback} from 'react';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {BackgroundColors, Colors} from '../../helpers/Colors';
@@ -33,7 +33,7 @@ export default function List({navigation}) {
     }
   }, [url]);
 
-  const getPokemon = async data => {
+  const getPokemon = useCallback(async data => {
     try {
       await data.forEach(async pokemon => {
         const res = await axios.get(pokemon.url);
@@ -43,14 +43,10 @@ export default function List({navigation}) {
     } catch (error) {
       console.log(error);
     }
-  };
+  }, []);
 
   const pagination = useCallback(async url => {
     setUrl(url);
-  }, []);
-
-  useEffect(() => {
-    getAllPokemons;
   }, []);
 
   const renderItem = ({item}) => {

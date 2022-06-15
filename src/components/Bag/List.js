@@ -24,27 +24,24 @@ export default function List({navigation}) {
 
   const getPokebag = useMemo(() => {
     setLoading(true);
-    myDB
-      .ref('pokebag/')
-      .orderByChild('id')
-      .once('value')
-      .then(snapshot => {
-        if (snapshot.val() != null) {
-          const res = Object.values(snapshot.val());
-          setPokemons(res);
-          if (pokemons != false) {
-            setLoading(false);
+    if (pokemons != false) {
+      setLoading(false);
+    } else {
+      myDB
+        .ref('pokebag/')
+        .orderByChild('id')
+        .once('value')
+        .then(snapshot => {
+          if (snapshot.val() != null) {
+            const res = Object.values(snapshot.val());
+            setPokemons(res);
           }
-        }
-      });
+        });
+    }
   }, [pokemons]);
 
   const removePokemon = useCallback(async id => {
     await myDB.ref(`/pokebag/${id}`).remove();
-  }, []);
-
-  useEffect(() => {
-    getPokebag;
   }, []);
 
   const renderItem = ({item}) => {
